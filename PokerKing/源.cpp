@@ -11,25 +11,29 @@ char InitPoker[13][3] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J"
 #include "PokerType.h"
 #include "PairPoker.h"
 
-struct node
-{
-	PokerType TwoPok[2];	//两张底牌
-	PokerType PubPok[5];	//5张公牌
-	short int nowPub;			//现有公牌张数
-	double winrate;
-	int win;
-	int visit;
-	struct node *child;
-	struct node *next;
-	struct node *parent;
-};
-
-//最终计算分数阶段的7张牌
-class Cards
+class CardsBase
 {
 public:
 	PokerType TwoPok[2];	//两张底牌
 	PokerType PubPok[5];	//5张公牌
+};
+
+class node : public CardsBase
+{
+public:
+	short int nowPub;			//现有公牌张数
+	double winrate;
+	int win;
+	int visit;
+	node *child;
+	node *next;
+	node *parent;
+};
+
+//最终计算分数阶段的7张牌
+class Cards : public CardsBase
+{
+public:
 	bool existA;			//是否存在Ace
 	long long int score = 0, Maxs;
 	//计算当前7张牌中5张最大组成牌的分数
