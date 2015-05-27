@@ -74,7 +74,7 @@ private:
 		{
 			if (i < 2)
 			{
-				if (strcmp(TwoPok[i].num, "A") == 0)
+				if (TwoPok[i].isAce())
 				{
 					existA = true;
 					return;
@@ -82,7 +82,7 @@ private:
 			}
 			else
 			{
-				if (strcmp(PubPok[i-2].num, "A") == 0)
+				if (PubPok[i-2].isAce())
 				{
 					existA = true;
 					return;
@@ -603,21 +603,19 @@ int main()
 	srand((unsigned)time(NULL));
 	clock_t start, end;
 	MCTS myTree;
-	myTree.APoker.Init();
 	while (1)
 	{
 		for (int i = 0; i < 2; i++)
 		{
-			scanf("%s", myTree.Hold[i].num);
-			scanf("%d", &myTree.Hold[i].color);
+			myTree.Hold[i].fromInput();
 		}
 		myTree.APoker.destroy(myTree.Hold[0].num, myTree.Hold[0].color);
 		myTree.APoker.destroy(myTree.Hold[1].num, myTree.Hold[1].color);
 		myTree.state = 1;
-
-		scanf("%s %d", myTree.Pub[0].num, &myTree.Pub[0].color);
-		scanf("%s %d", myTree.Pub[1].num, &myTree.Pub[1].color);
-		scanf("%s %d", myTree.Pub[2].num, &myTree.Pub[2].color);
+		
+		myTree.Pub[0].fromInput();
+		myTree.Pub[1].fromInput();
+		myTree.Pub[2].fromInput();
 		myTree.PubLen = 3;
 		myTree.state = 2;
 		start = clock();

@@ -1,6 +1,7 @@
 #include "PokerType.h"
 
 #include <cstring>
+#include <cstdio>
 
 char InitPoker[13][3] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
 PokerColor ColorList[4]={ SPADES, HEARTS, CLUBS, DIAMONDS };
@@ -19,6 +20,17 @@ void PokerType::setCard(int i, PokerColor c)
 {
 	strcpy(num, InitPoker[i % 13]);
 	color = c;
+}
+
+void PokerType::fromInput()
+{
+	scanf("%s", num);
+	scanf("%d", &color);
+}
+
+bool PokerType::isAce()
+{
+	return num[0]=='A';
 }
 
 int PokerType::toInt(bool ace)
