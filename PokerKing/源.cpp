@@ -11,52 +11,54 @@ enum PokerColor
 };
 char InitPoker[13][3] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
 
-struct PokerType
+class PokerType
 {
+public:
 	char num[3];	//点数例如J,10	
 	PokerColor color;	//花色
-};
 
-//将扑克转换为Int型大小,对A分两种情况转换
-int toInt(char *pok, bool A)
-{
-	if (pok[0] >= '2' && pok[0] <= '9')
+	//将扑克转换为Int型大小,对A分两种情况转换
+	int toInt(bool ace)
 	{
-		return pok[0] - '0';
-	}
-	else if (pok[0] == 'J')
-	{
-		return 11;
-	}
-	else if (pok[0] == 'Q')
-	{
-		return 12;
-	}
-	else if (pok[0] == 'K')
-	{
-		return 13;
-	}
-	else if (pok[0] == '1' && pok[1] == '0')
-	{
-		return 10;
-	}
-	else if (pok[0] == 'A')
-	{
-		if (A)
+		if (num[0] >= '2' && num[0] <= '9')
 		{
-			return 14;
+			return num[0] - '0';
 		}
-		else
+		else if (num[0] == 'J')
 		{
-			return 1;
+			return 11;
 		}
+		else if (num[0] == 'Q')
+		{
+			return 12;
+		}
+		else if (num[0] == 'K')
+		{
+			return 13;
+		}
+		else if (num[0] == '1' && num[1] == '0')
+		{
+			return 10;
+		}
+		else if (num[0] == 'A')
+		{
+			if (A)
+			{
+				return 14;
+			}
+			else
+			{
+				return 1;
+			}
+		}
+		return -1;
 	}
-}
+};
 
 struct node
 {
-	struct PokerType TwoPok[2];	//两张底牌
-	struct PokerType PubPok[5];	//5张公牌
+	PokerType TwoPok[2];	//两张底牌
+	PokerType PubPok[5];	//5张公牌
 	short int nowPub;			//现有公牌张数
 	double winrate;
 	int win;
@@ -71,7 +73,7 @@ class PairPoker
 {
 public:
 	int len = 52;
-	struct PokerType All[52];
+	PokerType All[52];
 
 	//初始化整副牌
 	void Init()
@@ -99,10 +101,10 @@ public:
 	}
 
 	//随机抽取一张牌，可用于发牌和销牌
-	struct PokerType randPok()
+	PokerType randPok()
 	{
 		int num = rand() % len;
-		struct PokerType temp;
+		PokerType temp;
 		temp = All[num];
 		All[num] = All[len - 1];
 		len--;
@@ -131,8 +133,8 @@ private:
 class Cards
 {
 public:
-	struct PokerType TwoPok[2];	//两张底牌
-	struct PokerType PubPok[5];	//5张公牌
+	PokerType TwoPok[2];	//两张底牌
+	PokerType PubPok[5];	//5张公牌
 	bool existA;			//是否存在Ace
 	long long int score = 0, Maxs;
 	//计算当前7张牌中5张最大组成牌的分数
@@ -199,13 +201,13 @@ private:
 		{
 			if (i < 2)
 			{
-				point[i] = toInt(TwoPok[i].num, Atype);
+				point[i] = TwoPok[i].toInt(Atype);
 				color[i] = TwoPok[i].color;
 				colorSum[TwoPok[i].color]++;
 			}
 			else
 			{
-				point[i] = toInt(PubPok[i - 2].num, Atype);
+				point[i] = PubPok[i - 2].toInt(Atype);
 				color[i] = PubPok[i - 2].color;
 				colorSum[PubPok[i - 2].color]++;
 			}
@@ -460,16 +462,16 @@ class MCTS
 public:
 	PairPoker APoker;	//实际扑克
 	PairPoker opPoker;	//模拟用扑克
-	struct PokerType Hold[2];	//我方底牌
-	struct PokerType Pub[5];	//公牌
-	struct PokerType opPub[5];	//模拟公牌
+	PokerType Hold[2];	//我方底牌
+	PokerType Pub[5];	//公牌
+	PokerType opPub[5];	//模拟公牌
 	int PubLen = 0;
 	int opPubLen = 0;			//模拟用公牌张数
 	struct node first[15][15][4][4];	//保存底牌的所有情况
 	struct node *root;
 	short int state;	//共5种模拟阶段：未拿到底牌，拿到底牌，3张公牌，4张，5张
 	int playerSum = 8;			//总玩家数
-	struct PokerType otherHold[8][2];	//其他人底牌
+	PokerType otherHold[8][2];	//其他人底牌
 	Cards myCards, enemyCards;	//我方和其他人分数比较
 	long long int myscore, otherscore;
 	int win = 0, visit = 0;//2,3,4阶段的胜负情况
@@ -485,7 +487,7 @@ public:
 				Hold[0] = APoker.randPok();
 				Hold[1] = APoker.randPok();
 				sortHold();
-				root = &first[toInt(Hold[0].num, 1)][toInt(Hold[1].num, 1)][Hold[0].color][Hold[1].color];
+				root = &first[Hold[0].toInt(1)][Hold[1].toInt(1)][Hold[0].color][Hold[1].color];
 				opPoker.randPok();
 				opPub[opPubLen++] = opPoker.randPok();
 				opPub[opPubLen++] = opPoker.randPok();
@@ -514,7 +516,7 @@ public:
 			{
 				copyPoker();
 				sortHold();
-				root = &first[toInt(Hold[0].num, 1)][toInt(Hold[1].num, 1)][Hold[0].color][Hold[1].color];
+				root = &first[Hold[0].toInt(1)][Hold[1].toInt(1)][Hold[0].color][Hold[1].color];
 				opPoker.randPok();
 				opPub[opPubLen++] = opPoker.randPok();
 				opPub[opPubLen++] = opPoker.randPok();
@@ -608,9 +610,9 @@ private:
 	//整理底牌
 	void sortHold()
 	{
-		struct PokerType temp;
-		int a = toInt(Hold[0].num, 1);
-		int b = toInt(Hold[1].num, 1);
+		PokerType temp;
+		int a = Hold[0].toInt(1);
+		int b = Hold[1].toInt(1);
 		temp = Hold[0];
 		if (a < b)
 		{
