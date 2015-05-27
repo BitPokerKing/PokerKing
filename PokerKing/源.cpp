@@ -9,6 +9,7 @@
 char InitPoker[13][3] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
 
 #include "PokerType.h"
+#include "PairPoker.h"
 
 struct node
 {
@@ -21,51 +22,6 @@ struct node
 	struct node *child;
 	struct node *next;
 	struct node *parent;
-};
-
-//一整副牌
-class PairPoker
-{
-public:
-	int len = 52;
-	PokerType All[52];
-
-	//初始化整副牌
-	void Init()
-	{
-		for (int i = 0; i < 52; i++)
-		{
-			All[i].setCard(i);
-		}
-	}
-
-	//随机抽取一张牌，可用于发牌和销牌
-	PokerType randPok()
-	{
-		int num = rand() % len;
-		PokerType temp;
-		temp = All[num];
-		All[num] = All[len - 1];
-		len--;
-		return temp;
-	}
-
-	//销毁指定牌
-	void Destroy(char *point, int color)
-	{
-		for (int i = 0; i < len; i++)
-		{
-			if (strcmp(point, All[i].num)==0 && color == All[i].color)
-			{
-				All[i] = All[len-1];
-				len = len - 1;
-				break;
-			}
-		}
-	}
-
-private:
-
 };
 
 //最终计算分数阶段的7张牌
@@ -651,8 +607,8 @@ int main()
 			scanf("%s", myTree.Hold[i].num);
 			scanf("%d", &myTree.Hold[i].color);
 		}
-		myTree.APoker.Destroy(myTree.Hold[0].num, myTree.Hold[0].color);
-		myTree.APoker.Destroy(myTree.Hold[1].num, myTree.Hold[1].color);
+		myTree.APoker.destroy(myTree.Hold[0].num, myTree.Hold[0].color);
+		myTree.APoker.destroy(myTree.Hold[1].num, myTree.Hold[1].color);
 		myTree.state = 1;
 
 		scanf("%s %d", myTree.Pub[0].num, &myTree.Pub[0].color);
