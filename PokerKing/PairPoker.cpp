@@ -27,20 +27,7 @@ PokerType PairPoker::randPok()
 	return temp;
 }
 
-void PairPoker::destroy(char *point, int color)
-{
-	for (int i = 0; i < len; i++)
-	{
-		if (strcmp(point, All[i].num)==0 && color == All[i].color)
-		{
-			All[i] = All[len-1];
-			len = len - 1;
-			break;
-		}
-	}
-}
-
-void PairPoker::destroy(PokerType&& t)
+void PairPoker::destroy(PokerType& t)
 {
 	for (int i = 0; i < len; i++)
 	{

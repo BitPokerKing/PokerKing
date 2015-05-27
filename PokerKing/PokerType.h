@@ -10,20 +10,21 @@ enum PokerColor
 class PokerType
 {
 public:
-	char num[3];	//点数例如J,10	
+	char num;	//点数例如J,10,其中10用X表示
 	PokerColor color;	//花色
 
 	PokerType();
 
 	inline bool operator==(const PokerType& x)
 	{
-		return strcmp(num, x.num)==0 && color==x.color;
+		return num==x.num && color==x.color;
 	}
 
 	void setCard(int i);
 	void setCard(int i, PokerColor c);
 
 	void fromInput();
+	void print();
 
 	bool isAce();
 
