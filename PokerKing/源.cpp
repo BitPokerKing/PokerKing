@@ -5,55 +5,10 @@
 #include <stdlib.h>
 #include <time.h>
 #define max(a,b) a>b?a:b;
-enum PokerColor
-{
-	SPADES, HEARTS, CLUBS, DIAMONDS		//黑桃、红桃、梅花、方片
-};
+
 char InitPoker[13][3] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
 
-class PokerType
-{
-public:
-	char num[3];	//点数例如J,10	
-	PokerColor color;	//花色
-
-	//将扑克转换为Int型大小,对A分两种情况转换
-	int toInt(bool ace)
-	{
-		if (num[0] >= '2' && num[0] <= '9')
-		{
-			return num[0] - '0';
-		}
-		else if (num[0] == 'J')
-		{
-			return 11;
-		}
-		else if (num[0] == 'Q')
-		{
-			return 12;
-		}
-		else if (num[0] == 'K')
-		{
-			return 13;
-		}
-		else if (num[0] == '1' && num[1] == '0')
-		{
-			return 10;
-		}
-		else if (num[0] == 'A')
-		{
-			if (A)
-			{
-				return 14;
-			}
-			else
-			{
-				return 1;
-			}
-		}
-		return -1;
-	}
-};
+#include "PokerType.h"
 
 struct node
 {
@@ -80,23 +35,7 @@ public:
 	{
 		for (int i = 0; i < 52; i++)
 		{
-			strcpy(All[i].num, InitPoker[i % 13]);
-			if (i < 13)
-			{
-				All[i].color = SPADES;
-			}
-			else if (i < 26)
-			{
-				All[i].color = HEARTS;
-			}
-			else if (i < 39)
-			{
-				All[i].color = CLUBS;
-			}
-			else if (i < 52)
-			{
-				All[i].color = DIAMONDS;
-			}
+			All[i].setCard(i);
 		}
 	}
 
