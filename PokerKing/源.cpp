@@ -609,8 +609,8 @@ int main()
 		{
 			myTree.Hold[i].fromInput();
 		}
-		myTree.APoker.destroy(myTree.Hold[0].num, myTree.Hold[0].color);
-		myTree.APoker.destroy(myTree.Hold[1].num, myTree.Hold[1].color);
+		myTree.APoker.destroy(myTree.Hold[0]);
+		myTree.APoker.destroy(myTree.Hold[1]);
 		myTree.state = 1;
 		
 		myTree.Pub[0].fromInput();

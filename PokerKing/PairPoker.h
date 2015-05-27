@@ -19,6 +19,8 @@ public:
 
 	//销毁指定牌
 	void destroy(char *point, int color);
+	//销毁指定牌
+	void destroy(PokerType&& t);
 
 };
 

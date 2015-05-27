@@ -39,3 +39,17 @@ void PairPoker::destroy(char *point, int color)
 		}
 	}
 }
+
+void PairPoker::destroy(PokerType&& t)
+{
+	for (int i = 0; i < len; i++)
+	{
+		if (t == All[i])
+		{
+			All[i] = All[len-1];
+			len = len - 1;
+			break;
+		}
+	}
+}
+

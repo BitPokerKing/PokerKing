@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstring>
+
 enum PokerColor
 {
 	SPADES, HEARTS, CLUBS, DIAMONDS		//黑桃、红桃、梅花、方片
@@ -12,6 +14,11 @@ public:
 	PokerColor color;	//花色
 
 	PokerType();
+
+	inline bool operator==(const PokerType& x)
+	{
+		return strcmp(num, x.num)==0 && color==x.color;
+	}
 
 	void setCard(int i);
 	void setCard(int i, PokerColor c);
