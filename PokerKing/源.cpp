@@ -193,6 +193,8 @@ private:
 	//将7张牌点数转为Int并且记录花色数和点数个数
 	void calpoint(int Atype)
 	{
+		maxSum = 0;
+		maxPoint = 0;
 		memset(colorSum, 0, sizeof(colorSum));
 		memset(pointSum, 0, sizeof(pointSum));
 		for (int i = 0; i < 7; i++)
@@ -213,6 +215,10 @@ private:
 			if (pointSum[point[i]] > maxSum)
 			{
 				maxSum = pointSum[point[i]];
+				maxPoint = point[i];
+			}
+			else if (pointSum[point[i]] == maxSum)
+			{
 				if (maxPoint < point[i])
 				{
 					maxPoint = point[i];
@@ -261,6 +267,11 @@ private:
 				while (point[k] == point[j]) //当相邻牌点数相同则跳至下一张
 				{
 					k++;
+				}
+				if (k >= 7)	//如果由于有相同的牌导致k下移使得牌不够，也无法成顺
+				{
+					S = false;
+					break;
 				}
 				if (F && color[k] == color[j]);
 				else
@@ -464,11 +475,11 @@ public:
 	struct PokerType Pub[5];	//公牌
 	struct PokerType opPub[5];	//模拟公牌
 	int PubLen = 0;
-	int opPubLen = 0;			//模拟用公牌张数
+	int opPubLen;			//模拟用公牌张数
 	struct node first[15][15][4][4];	//保存底牌的所有情况
 	struct node *root;
 	short int state;	//共5种模拟阶段：未拿到底牌，拿到底牌，3张公牌，4张，5张
-	int playerSum = 8;			//总玩家数
+	int playerSum = 2;			//总玩家数
 	struct PokerType otherHold[8][2];	//其他人底牌
 	Cards myCards, enemyCards;	//我方和其他人分数比较
 	long long int myscore, otherscore;
@@ -479,6 +490,7 @@ public:
 		int t = 10000;
 		while (t--)
 		{
+			opPubLen = PubLen;
 			if (state == 0)
 			{
 				copyPoker();
@@ -504,11 +516,14 @@ public:
 					if (myscore < otherscore)
 					{
 						root->visit++;
-						continue;
+						break;
+					}
+					if (i == playerSum - 1)
+					{
+						root->visit++;
+						root->win++;
 					}
 				}
-				root->win++;
-				root->visit++;
 			}
 			else if (state == 1)
 			{
@@ -530,14 +545,18 @@ public:
 					otherHold[i][0] = opPoker.randPok();
 					otherHold[i][1] = opPoker.randPok();
 					calOtherScore(i);
+					calOtherScore(i);
 					if (myscore < otherscore)
 					{
 						root->visit++;
-						continue;
+						break;
+					}
+					if (i == playerSum - 1)
+					{
+						root->visit++;
+						root->win++;
 					}
 				}
-				root->win++;
-				root->visit++;
 			}
 			else if (state == 2)
 			{
@@ -555,12 +574,15 @@ public:
 					calOtherScore(i);
 					if (myscore < otherscore)
 					{
-						root->visit++;
-						continue;
+						visit++;
+						break;
+					}
+					if (i == playerSum - 1)
+					{
+						visit++;
+						win++;
 					}
 				}
-				win++;
-				visit++;
 			}
 			else if (state == 3)
 			{
@@ -576,12 +598,15 @@ public:
 					calOtherScore(i);
 					if (myscore < otherscore)
 					{
-						root->visit++;
-						continue;
+						visit++;
+						break;
+					}
+					if (i == playerSum - 1)
+					{
+						visit++;
+						win++;
 					}
 				}
-				win++;
-				visit++;
 			}
 			else if (state==4)
 			{
@@ -594,12 +619,15 @@ public:
 					calOtherScore(i);
 					if (myscore < otherscore)
 					{
-						root->visit++;
-						continue;
+						visit++;
+						break;
+					}
+					if (i == playerSum - 1)
+					{
+						visit++;
+						win++;
 					}
 				}
-				win++;
-				visit++;
 			}
 		}
 	}
@@ -685,9 +713,22 @@ int main()
 		myTree.APoker.Destroy(myTree.Hold[0].num, myTree.Hold[0].color);
 		myTree.APoker.Destroy(myTree.Hold[1].num, myTree.Hold[1].color);
 		myTree.state = 1;
+
+		scanf("%s %d", myTree.Pub[0].num, &myTree.Pub[0].color);
+		scanf("%s %d", myTree.Pub[1].num, &myTree.Pub[1].color);
+		scanf("%s %d", myTree.Pub[2].num, &myTree.Pub[2].color);
+		myTree.PubLen = 3;
+		myTree.state = 2;
 		start = clock();
 		myTree.MonteCarlo();
-		printf("%lf\n", 1.0*myTree.root->win / myTree.root->visit);
+
+		if (myTree.state==1)
+			printf("%lf\n", 1.0*myTree.root->win / myTree.root->visit);
+		else
+		{
+			printf("%lf\n", 1.0*myTree.win / myTree.visit);
+		}
+
 		end = clock();
 		printf("%d ms\n", end - start);
 	}
