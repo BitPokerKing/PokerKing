@@ -1,4 +1,6 @@
-#pragma once
+#ifndef POKERTYPE_H
+#define POKERTYPE_H
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <cstring>
@@ -34,4 +36,7 @@ public:
 	int toInt(bool ace);
 
 };
+
+#endif
+
 

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MAKEMOVE_H
+#define MAKEMOVE_H
 
 #include "PokerType.h"
 #include "MCTS.h"
@@ -60,4 +61,7 @@ public:
 
 
 };
+
+
+#endif
 

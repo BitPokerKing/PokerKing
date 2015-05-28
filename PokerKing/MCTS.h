@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MCTS_H
+#define MCTS_H
+
 #define _CRT_SECURE_NO_WARNINGS
 #include "PokerType.h"
 #include "PairPoker.h"
@@ -90,3 +92,5 @@ private:
 	//计算其他人分数
 	void calOtherScore(int n);
 };
+
+#endif

@@ -69,13 +69,14 @@
     <ClCompile Include="MCTS.cpp" />
     <ClCompile Include="PairPoker.cpp" />
     <ClCompile Include="PokerType.cpp" />
-    <ClCompile Include="源.cpp" />
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MakeMove.h" />
     <ClInclude Include="MCTS.h" />
     <ClInclude Include="PairPoker.h" />
     <ClInclude Include="PokerType.h" />
+    <ClInclude Include="test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

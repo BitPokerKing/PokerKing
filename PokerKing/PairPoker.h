@@ -1,4 +1,6 @@
-#pragma once
+#ifndef PAIRPOKER_H
+#define PAIRPOKER_H
+
 #define _CRT_SECURE_NO_WARNINGS
 #include "PokerType.h"
 
@@ -21,5 +23,8 @@ public:
 	void destroy(PokerType& t);
 
 };
+
+#endif
+
 
 
