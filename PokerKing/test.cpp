@@ -6,7 +6,7 @@
 #include <time.h>
 #include "MCTS.h"
 
-int main()
+void test()
 {
 	srand((unsigned)time(NULL));
 	clock_t start, end;
@@ -43,5 +43,5 @@ int main()
 		end = clock();
 		printf("%d ms\n", end - start);
 	}
-	return 0;
+
 }

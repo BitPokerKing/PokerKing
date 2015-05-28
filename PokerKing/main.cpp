@@ -1,4 +1,8 @@
+#define ENABLE_TEST
+
 #define _CRT_SECURE_NO_WARNINGS
+
+#ifndef ENABLE_TEST
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -345,3 +349,15 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+#else
+
+#include "test.h"
+
+int main()
+{
+	test();
+	return 0;
+}
+
+#endif
