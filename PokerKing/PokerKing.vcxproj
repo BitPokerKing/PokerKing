@@ -64,6 +64,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="PairPoker.cpp" />
     <ClCompile Include="PokerType.cpp" />
     <ClCompile Include="源.cpp" />
