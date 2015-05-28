@@ -18,7 +18,7 @@ public:
 	PokerType randPok();
 
 	//Ïú»ÙÖ¸¶¨ÅÆ
-	void destroy(char *point, int color);
+	void destroy(PokerType& t);
 
 };
 

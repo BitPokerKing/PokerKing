@@ -1,8 +1,10 @@
 #include "PokerType.h"
 
 #include <cstring>
+#include <cstdio>
 
-char InitPoker[13][3] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+char InitPoker[] = "A23456789XJQK";
+char PokerName[13][3] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
 PokerColor ColorList[4]={ SPADES, HEARTS, CLUBS, DIAMONDS };
 
 PokerType::PokerType()
@@ -17,33 +19,53 @@ void PokerType::setCard(int i)
 
 void PokerType::setCard(int i, PokerColor c)
 {
-	strcpy(num, InitPoker[i % 13]);
+	num=InitPoker[i % 13];
 	color = c;
+}
+
+void PokerType::fromInput()
+{
+	static char s[20];
+	scanf("%s", s);
+	num=s[0];
+	if(num=='1')
+		num='X';
+	scanf("%d", &color);
+}
+
+void PokerType::print()
+{
+	printf("%s %d\n", num, color);
+}
+
+bool PokerType::isAce()
+{
+	return num==0;
 }
 
 int PokerType::toInt(bool ace)
 {
-	if (num[0] >= '2' && num[0] <= '9')
+	if (num >= '2' && num <= '9')
 	{
-		return num[0] - '0';
+		return num - '0';
 	}
-	else if (num[0] == 'J')
+	else if (num == 'J')
 	{
 		return 11;
 	}
-	else if (num[0] == 'Q')
+	else if (num == 'Q')
 	{
 		return 12;
 	}
-	else if (num[0] == 'K')
+	else if (num == 'K')
 	{
 		return 13;
 	}
-	else if (num[0] == '1' && num[1] == '0')
+	else if (num == 'X')
 	{
 		return 10;
 	}
-	else if (num[0] == 'A')
+	else if (num == 'A')
 	{
 		if (ace)
 		{
