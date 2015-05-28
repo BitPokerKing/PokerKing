@@ -6,11 +6,8 @@
 #include <time.h>
 #define max(a,b) a>b?a:b;
 
-char InitPoker[13][3] = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
-
 #include "PokerType.h"
 #include "PairPoker.h"
-
 class CardsBase
 {
 public:
@@ -157,16 +154,30 @@ private:
 		bool F = true;//同花	
 		bool S = false;//顺子
 		int i, j, k, l;
+		int samecolor = 0 , lastcolor;//配合检查是否为同花顺
+		for (int i = 0; i < 4; i++)
+		{
+			if (colorSum[i] >= 5)	//确定同花的颜色
+			{
+				samecolor = i;
+				break;
+			}
+		}
 		for (i = 0; i < 3; i++)
 		{
 			F = true;
 			S = true;
 			j = i;	//j为上一张牌
+			lastcolor = color[j];
 			k = j + 1;	//k为当前牌，检查顺子，不能出现k点数与j点数相等
 			for (l = 1; l < 5 && k < 7; l++)
 			{
 				while (point[k] == point[j]) //当相邻牌点数相同则跳至下一张
 				{
+					if (lastcolor != samecolor && color[k] == samecolor) //如果与j点数相同的牌中有同花花色，将上次的颜色也改为同花颜色
+					{
+						lastcolor = samecolor;
+					}
 					k++;
 				}
 				if (k >= 7)	//如果由于有相同的牌导致k下移使得牌不够，也无法成顺
@@ -174,7 +185,7 @@ private:
 					S = false;
 					break;
 				}
-				if (F && color[k] == color[j]);
+				if (F && samecolor == lastcolor);
 				else
 				{
 					F = false;
@@ -185,7 +196,22 @@ private:
 					break;
 				}
 				j = k;
+				lastcolor = color[j];
 				k++;
+			}
+			//还得对第五张牌可能相同的情况进行同花检查
+			while (point[k] == point[j] && k < 7)
+			{
+				if (lastcolor != samecolor && color[k] == samecolor) //如果与j点数相同的牌中有同花花色，将上次的颜色也改为同花颜色
+				{
+					lastcolor = samecolor;
+				}
+				k++;
+			}
+			if (F && samecolor == lastcolor);
+			else
+			{
+				F = false;
 			}
 			if (l == 5)
 			{
@@ -391,10 +417,9 @@ public:
 		int t = 10000;
 		while (t--)
 		{
-			opPubLen = PubLen;
+			copyPoker();
 			if (state == 0)
 			{
-				copyPoker();
 				Hold[0] = APoker.randPok();
 				Hold[1] = APoker.randPok();
 				sortHold();
@@ -428,7 +453,6 @@ public:
 			}
 			else if (state == 1)
 			{
-				copyPoker();
 				sortHold();
 				root = &first[Hold[0].toInt(1)][Hold[1].toInt(1)][Hold[0].color][Hold[1].color];
 				opPoker.randPok();
@@ -461,7 +485,6 @@ public:
 			}
 			else if (state == 2)
 			{
-				copyPoker();
 				opPoker.randPok();
 				opPub[opPubLen++] = opPoker.randPok();
 				opPoker.randPok();
@@ -476,6 +499,7 @@ public:
 					if (myscore < otherscore)
 					{
 						visit++;
+						calMyScore();
 						break;
 					}
 					if (i == playerSum - 1)
@@ -487,7 +511,6 @@ public:
 			}
 			else if (state == 3)
 			{
-				copyPoker();
 				opPoker.randPok();
 				opPub[opPubLen++] = opPoker.randPok();
 
@@ -511,7 +534,6 @@ public:
 			}
 			else if (state==4)
 			{
-				copyPoker();
 				calMyScore();
 				for (int i = 1; i < playerSum; i++)
 				{
@@ -558,6 +580,11 @@ private:
 	//恢复模拟用扑克
 	void copyPoker()
 	{
+		for (int i = 0; i < PubLen; i++)
+		{
+			opPub[i] = Pub[i];
+		}
+		opPubLen = PubLen;
 		memcpy(opPoker.All, APoker.All, sizeof(APoker.All));
 		opPoker.len = APoker.len;
 	}
@@ -603,7 +630,6 @@ int main()
 	srand((unsigned)time(NULL));
 	clock_t start, end;
 	MCTS myTree;
-	myTree.APoker.Init();
 	while (1)
 	{
 		for (int i = 0; i < 2; i++)
@@ -618,6 +644,9 @@ int main()
 		scanf("%s %d", myTree.Pub[0].num, &myTree.Pub[0].color);
 		scanf("%s %d", myTree.Pub[1].num, &myTree.Pub[1].color);
 		scanf("%s %d", myTree.Pub[2].num, &myTree.Pub[2].color);
+		myTree.APoker.destroy(myTree.Pub[0].num, myTree.Pub[0].color);
+		myTree.APoker.destroy(myTree.Pub[1].num, myTree.Pub[1].color);
+		myTree.APoker.destroy(myTree.Pub[2].num, myTree.Pub[2].color);
 		myTree.PubLen = 3;
 		myTree.state = 2;
 		start = clock();

@@ -45,7 +45,7 @@ int PokerType::toInt(bool ace)
 	}
 	else if (num[0] == 'A')
 	{
-		if (A)
+		if (ace)
 		{
 			return 14;
 		}

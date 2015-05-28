@@ -1,9 +1,11 @@
 #pragma once
-
+#define _CRT_SECURE_NO_WARNINGS
 enum PokerColor
 {
 	SPADES, HEARTS, CLUBS, DIAMONDS		//∫⁄Ã“°¢∫ÏÃ“°¢√∑ª®°¢∑Ω∆¨
 };
+
+char PokColor[4][10] = { "SPADES", "HEARTS", "CLUBS", "DIAMONDS" };
 
 class PokerType
 {
