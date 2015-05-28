@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -6,12 +7,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <math.h>
+#include <time.h>
+#include "MCTS.h"
 int m_socket_id = -1;
 int myjetton, mymoney;
 int otherjetton[8];
 int othermoney[8];
 int aliveplayer = 8;
+char order[5][10] = { "fold", "check", "call", "all_in", "raise 100" };
+
+char initcolor[4][10] = { "SPADES", "HEARTS", "CLUBS", "DIAMONDS" };
 
 /* 处理server的消息 */
 int on_server_message(int length, const char* buffer)
@@ -92,12 +98,16 @@ int main(int argc, char *argv[])
 	send(m_socket_id, reg_msg, strlen(reg_msg) + 1, 0);
 
 	/* 接收server消息，进入游戏 */
+
 	int now, Situ=0;//last记录当前信息状况，为seat,inquire之类
 	char words[10][10];//提取每行的信息
 	int num;//表示一块信息中的行数
 	int count = 0;
 	int lastbet;
-	char action[10];
+	char action[50];
+	char sendmsg[50];
+	srand((unsigned)time(NULL));
+	MCTS myTree;
 	while (1)
 	{
 		char buffer[1024] = { '\0' };
@@ -132,31 +142,31 @@ int main(int argc, char *argv[])
 					//读到一个换行符说明一行读取完毕，接下来处理该行
 					if (Situ == 0)
 					{
-						if (count == 1 && strcmp(words[0], "seat/") == 0)
+						if (strcmp(words[0], "seat/") == 0 && count == 1)
 						{
 							Situ = 1;	//记录座位和其他人的筹码和金钱
 						}
-						else if (count == 1 && strcmp(words[0], "blind/") == 0)
+						else if (strcmp(words[0], "blind/") == 0 && count == 1)
 						{
 							break;
 						}
-						else if (count == 1 && strcmp(words[0], "hold/") == 0)
+						else if (strcmp(words[0], "hold/") == 0 && count == 1)
 						{
 							Situ = 2;
 						}
-						else if (count == 1 && strcmp(words[0], "inquire/") == 0)
+						else if (strcmp(words[0], "inquire/") == 0 && count == 1)
 						{
 							Situ = 3;
 						}
-						else if (count == 1 && strcmp(words[0], "flop/") == 0)
+						else if (strcmp(words[0], "flop/") == 0 && count == 1)
 						{
 							Situ = 4;
 						}
-						else if (count == 1 && strcmp(words[0], "turn/") == 0)
+						else if (strcmp(words[0], "turn/") == 0 && count == 1)
 						{
 							Situ = 5;
 						}
-						else if (count == 1 && strcmp(words[0], "river/") == 0)
+						else if (strcmp(words[0], "river/") == 0 && count == 1)
 						{
 							Situ = 6;
 						}
@@ -224,59 +234,103 @@ int main(int argc, char *argv[])
 					}
 					else if (Situ == 2)	
 					{
-						if (count == 1 && strcmp("/hold", words[0]) == 0)
+						if (strcmp("/hold", words[0]) == 0 && count == 1)
 						{
+							myTree.state = 1;
 							Situ = 0;
 						}
 						else if (count == 2)
 						{
-							//修改自己底牌即可
+							//修改自己底牌
+							for (int i = 0; i < 4; i++)
+							{
+								if (strcmp(initcolor[i], words[0]) == 0)
+								{
+									myTree.Hold[num].color = (PokerColor)i;
+									myTree.Hold[num].num = words[1][1];
+								}
+							}
 						}
 					}
 					else if (Situ == 3)
 					{
-						if (count == 1 && strcmp("/inquire", words[0]))
+						if (strcmp("/inquire", words[0]) && count == 1)
 						{
 							Situ = 0;
 							//发送action
+							strcpy(action, order[rand() % 5]);
+							snprintf(sendmsg, sizeof(sendmsg), "%s", action);
+							send(m_socket_id, sendmsg, strlen(sendmsg), 0);
 						}
 						else if (strcmp("fold", words[4]) != 0)
 						{
 							lastbet = toint(words[3]);
 							//决策部分
+
+
 						}
 					}
 					else if (Situ == 4)
 					{
-						if (count == 1 && strcmp("/flop", words[0]))
+						if (strcmp("/flop", words[0]) && count == 1)
 						{
+							myTree.PubLen = 3;
+							myTree.state = 2;
 							Situ = 0;
 						}
 						else
 						{
-							//修改3张公牌以及当前状态即可
+							//修改3张公牌以及当前状态
+							for (int i = 0; i < 4; i++)
+							{
+								if (strcmp(initcolor[i], words[0]) == 0)
+								{
+									myTree.Pub[num].color = (PokerColor)i;
+									myTree.Pub[num].num = words[1][1];
+								}
+							}
 						}
 					}
 					else if (Situ == 5)
 					{
-						if (count == 1 && strcmp("/turn", words[0]))
+						if (strcmp("/turn", words[0]) && count == 1)
 						{
+							myTree.PubLen = 4;
+							myTree.state = 3;
 							Situ = 0;
 						}
 						else
 						{
 							//修改第4张公牌以及当前状态即可
+							for (int i = 0; i < 4; i++)
+							{
+								if (strcmp(initcolor[i], words[0]) == 0)
+								{
+									myTree.Pub[3].color = (PokerColor)i;
+									myTree.Pub[3].num = words[1][1];
+								}
+							}
 						}
 					}
 					else if (Situ == 6)
 					{
-						if (count == 1 && strcmp("/river", words[0]))
+						if (strcmp("/river", words[0]) && count == 1)
 						{
+							myTree.PubLen = 5;
+							myTree.state = 4;
 							Situ = 0;
 						}
 						else
 						{
-							//修改第5张公牌以及当前状态即可
+							//修改第5张公牌以及当前状态
+							for (int i = 0; i < 4; i++)
+							{
+								if (strcmp(initcolor[i], words[0]) == 0)
+								{
+									myTree.Pub[4].color = (PokerColor)i;
+									myTree.Pub[4].num = words[1][1];
+								}
+							}
 						}
 					}
 					count = 0;
