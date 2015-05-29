@@ -362,9 +362,8 @@ long long int Cards::checkOther()
 
 
 //蒙特卡洛模拟
-void MCTS::MonteCarlo()
+void MCTS::MonteCarlo(int t)
 {
-	int t = 10000;
 	while (t--)
 	{
 		copyPoker();
@@ -530,6 +529,7 @@ void MCTS::sortHold()
 //恢复模拟用扑克
 void MCTS::copyPoker()
 {
+	mtx.lock();
 	for (int i = 0; i < PubLen; i++)
 	{
 		opPub[i] = Pub[i];
@@ -537,6 +537,7 @@ void MCTS::copyPoker()
 	opPubLen = PubLen;
 	memcpy(opPoker.All, APoker.All, sizeof(APoker.All));
 	opPoker.len = APoker.len;
+	mtx.unlock();
 }
 
 //计算我方分数
@@ -584,11 +585,52 @@ void MCTS::initPok()
 //设置底牌
 void MCTS::setHold(int num, PokerType pok)
 {
+	mtx.lock();
 	Hold[num] = pok;
+	mtx.unlock();
 }
 
 //设置公牌
 void MCTS::setPub(PokerType pok)
 {
+	mtx.lock();
 	Pub[PubLen++] = pok;
+	mtx.unlock();
+}
+
+
+//获取当前胜率
+double MCTS::getRate()
+{
+	return visit==0 ? 0.0 : (double)win/visit;
+}
+
+//清空胜率
+void MCTS::resetRate()
+{
+	visit=0;
+	win=0;
+}
+
+//线程主函数
+void MCTS::threadMC(MCTS* inst)
+{
+	while(!inst->threadEnded)
+	{
+		inst->MonteCarlo(1);
+	}
+}
+
+//开始线程
+void MCTS::beginThread()
+{
+	threadEnded = false;
+	threadExpand = new thread(threadMC, this);
+}
+
+//结束线程
+void MCTS::endThread()
+{
+	threadEnded = true;
+	threadExpand->join();
 }
