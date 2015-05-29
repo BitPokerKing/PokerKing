@@ -112,6 +112,7 @@ int main(int argc, char *argv[])
 	char sendmsg[50];
 	srand((unsigned)time(NULL));
 	MCTS myTree;
+	PokerType nowPok;
 	while (1)
 	{
 		char buffer[1024] = { '\0' };
@@ -123,7 +124,8 @@ int main(int argc, char *argv[])
 			{
 				break;
 			}
-
+			if (Situ == -1)
+				break;
 			//解析收到的消息
 			int i;
 			count = 0;
@@ -173,6 +175,11 @@ int main(int argc, char *argv[])
 						else if (strcmp(words[0], "river/") == 0 && count == 1)
 						{
 							Situ = 6;
+						}
+						else if (strcmp(words[0], "game-over") == 0)
+						{
+							Situ = -1;
+							break;
 						}
 						num = 0;
 					}
@@ -250,8 +257,11 @@ int main(int argc, char *argv[])
 							{
 								if (strcmp(initcolor[i], words[0]) == 0)
 								{
-									myTree.Hold[num].color = (PokerColor)i;
-									myTree.Hold[num].num = words[1][1];
+									nowPok.color = (PokerColor)i;
+									nowPok.num = words[1][1];
+									if (nowPok.num == '1')
+										nowPok.num = 'X';
+									myTree.setHold(num, nowPok);
 								}
 							}
 						}
@@ -278,7 +288,6 @@ int main(int argc, char *argv[])
 					{
 						if (strcmp("/flop", words[0]) && count == 1)
 						{
-							myTree.PubLen = 3;
 							myTree.state = 2;
 							Situ = 0;
 						}
@@ -289,8 +298,11 @@ int main(int argc, char *argv[])
 							{
 								if (strcmp(initcolor[i], words[0]) == 0)
 								{
-									myTree.Pub[num].color = (PokerColor)i;
-									myTree.Pub[num].num = words[1][1];
+									nowPok.color = (PokerColor)i;
+									nowPok.num = words[1][0];
+									if (nowPok.num == '1')
+										nowPok.num = 'X';
+									myTree.setPub(nowPok);
 								}
 							}
 						}
@@ -299,7 +311,6 @@ int main(int argc, char *argv[])
 					{
 						if (strcmp("/turn", words[0]) && count == 1)
 						{
-							myTree.PubLen = 4;
 							myTree.state = 3;
 							Situ = 0;
 						}
@@ -310,8 +321,11 @@ int main(int argc, char *argv[])
 							{
 								if (strcmp(initcolor[i], words[0]) == 0)
 								{
-									myTree.Pub[3].color = (PokerColor)i;
-									myTree.Pub[3].num = words[1][1];
+									nowPok.color = (PokerColor)i;
+									nowPok.num = words[1][0];
+									if (nowPok.num == '1')
+										nowPok.num = 'X';
+									myTree.setPub(nowPok);
 								}
 							}
 						}
@@ -320,7 +334,6 @@ int main(int argc, char *argv[])
 					{
 						if (strcmp("/river", words[0]) && count == 1)
 						{
-							myTree.PubLen = 5;
 							myTree.state = 4;
 							Situ = 0;
 						}
@@ -329,10 +342,16 @@ int main(int argc, char *argv[])
 							//修改第5张公牌以及当前状态
 							for (int i = 0; i < 4; i++)
 							{
-								if (strcmp(initcolor[i], words[0]) == 0)
+								for (int i = 0; i < 4; i++)
 								{
-									myTree.Pub[4].color = (PokerColor)i;
-									myTree.Pub[4].num = words[1][1];
+									if (strcmp(initcolor[i], words[0]) == 0)
+									{
+										nowPok.color = (PokerColor)i;
+										nowPok.num = words[1][0];
+										if (nowPok.num == '1')
+											nowPok.num = 'X';
+										myTree.setPub(nowPok);
+									}
 								}
 							}
 						}

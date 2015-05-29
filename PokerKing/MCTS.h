@@ -79,7 +79,17 @@ public:
 	//蒙特卡洛模拟
 	void MonteCarlo();
 
+	//设置底牌
+	void setHold(int num, PokerType pok);
+
+	//设置公牌
+	void setPub(PokerType pok);
+
+	//初始化公牌
+	void initPok();
+
 private:
+
 	//整理底牌
 	void sortHold();
 
@@ -91,6 +101,7 @@ private:
 
 	//计算其他人分数
 	void calOtherScore(int n);
-};
 
+	
+};
 #endif

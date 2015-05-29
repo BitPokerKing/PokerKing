@@ -574,3 +574,21 @@ void MCTS::calOtherScore(int n)
 	enemyCards.calMaxScore();
 	otherscore = enemyCards.Maxs;
 }
+
+//初始化底牌及公牌
+void MCTS::initPok()
+{
+	PubLen = 0;
+}
+
+//设置底牌
+void MCTS::setHold(int num, PokerType pok)
+{
+	Hold[num] = pok;
+}
+
+//设置公牌
+void MCTS::setPub(PokerType pok)
+{
+	Pub[PubLen++] = pok;
+}
