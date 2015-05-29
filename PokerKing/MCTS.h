@@ -63,8 +63,10 @@ public:
 	PairPoker APoker;	//实际扑克
 	PairPoker opPoker;	//模拟用扑克
 	PokerType Hold[2];	//我方底牌
+	PokerType opHold[2];//模拟时我方底牌
 	PokerType Pub[5];	//公牌
 	PokerType opPub[5];	//模拟公牌
+	int HoldLen = 0, opHoldLen;
 	int PubLen = 0;
 	int opPubLen;			//模拟用公牌张数
 	node first[15][15][4][4];	//保存底牌的所有情况
@@ -80,7 +82,7 @@ public:
 	void MonteCarlo();
 
 	//设置底牌
-	void setHold(int num, PokerType pok);
+	void setHold(PokerType pok);
 
 	//设置公牌
 	void setPub(PokerType pok);

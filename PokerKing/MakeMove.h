@@ -20,7 +20,7 @@ struct Move
 	}
 };
 
-#define MAX_PLAYER 10000
+#define MAX_PLAYER 10
 #define MAX_ID 10000
 
 class MakeMove

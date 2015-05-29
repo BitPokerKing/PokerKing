@@ -530,10 +530,9 @@ void MCTS::sortHold()
 //恢复模拟用扑克
 void MCTS::copyPoker()
 {
-	for (int i = 0; i < PubLen; i++)
-	{
-		opPub[i] = Pub[i];
-	}
+	memcpy(opPub, Pub, sizeof(Pub));
+	memcpy(opHold, Hold, sizeof(Hold));
+	opHoldLen = HoldLen;
 	opPubLen = PubLen;
 	memcpy(opPoker.All, APoker.All, sizeof(APoker.All));
 	opPoker.len = APoker.len;
@@ -578,13 +577,14 @@ void MCTS::calOtherScore(int n)
 //初始化底牌及公牌
 void MCTS::initPok()
 {
+	HoldLen = 0;
 	PubLen = 0;
 }
 
 //设置底牌
-void MCTS::setHold(int num, PokerType pok)
+void MCTS::setHold(PokerType pok)
 {
-	Hold[num] = pok;
+	Hold[HoldLen++] = pok;
 }
 
 //设置公牌
