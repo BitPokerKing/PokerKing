@@ -612,6 +612,15 @@ void MCTS::resetRate()
 	win=0;
 }
 
+//在state==0或1时不清空胜率
+void MCTS::tryResetRate()
+{
+	if(state>1)
+	{
+		resetRate();
+	}
+}
+
 //线程主函数
 void MCTS::threadMC(MCTS* inst)
 {

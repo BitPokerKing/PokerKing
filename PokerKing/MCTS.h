@@ -103,6 +103,9 @@ public:
 	//清空胜率
 	void resetRate();
 
+	//在state==0或1时不清空胜率
+	void tryResetRate();
+
 private:
 
 	//线程主函数
