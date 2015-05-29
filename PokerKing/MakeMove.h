@@ -57,7 +57,7 @@ public:
 	void makeEnemyMove(int id, int jetton, int money, int bet, MoveType type);
 	void setTotalPot(int bet);
 
-	Move makeNextMove();
+	Move makeNextMove(int msec=450);
 
 
 };

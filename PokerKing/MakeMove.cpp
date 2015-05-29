@@ -1,6 +1,8 @@
 #include "MakeMove.h"
 
 #include <cstring>
+#include <thread>
+using namespace std;
 
 MakeMove::MakeMove(MCTS& tree, int id)
 	:mcts(&tree)
@@ -31,11 +33,11 @@ void MakeMove::newCard(PokerType card, bool isHold)
 {
 	if(isHold)
 	{
-		// do something about hold cards
+		mcts->setHold(card);
 	}
 	else
 	{
-		// do something about flop/turn/river cards
+		mcts->setPub(card);
 	}
 }
 
@@ -50,8 +52,10 @@ void MakeMove::setTotalPot(int bet)
 	totalBet=bet;
 }
 
-Move MakeMove::makeNextMove()
+Move MakeMove::makeNextMove(int msec)
 {
+	mcts->tryResetRate();
+	this_thread::sleep_for(chrono::milliseconds(450));
 	return makeDirectNextMove();
 }
 
@@ -62,6 +66,7 @@ int MakeMove::calcSupposedWager()
 
 Move MakeMove::makeDirectNextMove()
 {
+	double rate=mcts->getRate();
 	// do something with mcts
 	return Move(FOLD);
 }

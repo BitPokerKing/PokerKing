@@ -5,6 +5,11 @@
 #include "PokerType.h"
 #include "PairPoker.h"
 
+#include <thread>
+#include <mutex>
+using namespace std;
+
+
 class CardsBase
 {
 public:
@@ -78,8 +83,12 @@ public:
 	long long int myscore, otherscore;
 	int win = 0, visit = 0;//2,3,4阶段的胜负情况
 
+	mutex mtx; //用于协调扩展线程和获取结果过程的互斥锁
+	thread* threadExpand; //离线扩展线程
+	bool threadEnded; //标记扩展是否结束
+
 	//蒙特卡洛模拟
-	void MonteCarlo();
+	void MonteCarlo(int t=10000);
 
 	//设置底牌
 	void setHold(PokerType pok);
@@ -90,7 +99,25 @@ public:
 	//初始化公牌
 	void initPok();
 
+	//获取当前胜率
+	double getRate();
+
+	//清空胜率
+	void resetRate();
+
+	//在state==0或1时不清空胜率
+	void tryResetRate();
+
 private:
+
+	//线程主函数
+	static void threadMC(MCTS* inst);
+
+	//开始线程
+	void beginThread();
+
+	//结束线程
+	void endThread();
 
 	//整理底牌
 	void sortHold();
